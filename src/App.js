@@ -1,26 +1,24 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import jsonServerProvider from 'ra-data-json-server';
+import {Admin, Resource, fetchUtils} from 'react-admin';
+import {CreateHello, EditHello, HelloList, ShowHello} from './views/hello';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+const httpClient = (url, options = {}) => {
+	if (!options.headers) {
+		options.headers = new Headers({ Accept: 'application/json' });
+	}
+	// add your own headers here
+	options.headers.set('X-Custom-Header', 'foobar');
+	return fetchUtils.fetchJson(url, options);
+};
+
+const dataProvider = jsonServerProvider("http://localhost:8080", httpClient);
+
+const App = () => (
+	<Admin dataProvider={dataProvider}>
+		<Resource name="hello" list={HelloList} create={CreateHello} edit={EditHello} show={ShowHello}/>
+	</Admin>
+);
 
 export default App;
